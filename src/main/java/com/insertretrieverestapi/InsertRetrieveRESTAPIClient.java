@@ -1,9 +1,8 @@
 package com.insertretrieverestapi;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -23,27 +22,30 @@ public class InsertRetrieveRESTAPIClient {
 	@Qualifier("insertretrieve")
 	private org.apache.cxf.jaxrs.client.WebClient webClient;
 
-	private static Logger LOGGER = LoggerFactory.getLogger(InsertRetrieveRESTAPIClient.class);
+	private static Logger LOGGER = LoggerFactory
+			.getLogger(InsertRetrieveRESTAPIClient.class);
 
 	public void insert(final String id) {
 		webClient.reset();
 		webClient.path("/insert/" + id);
 		webClient.post(null);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<Map.Entry<String, Element>> retrieve() {
-		List<Map.Entry<String, Element>> eleList = new ArrayList<Map.Entry<String,Element>>();
+	public void retrieve() {
+		List<Element> eleList = new ArrayList<Element>();
 		webClient.reset();
 		webClient.path("/retrieve");
 		Response response = webClient.get();
 		if (response.getStatus() == 200) {
-			eleList = (List<Map.Entry<String, Element>>) response.readEntity(List.class);
-			LOGGER.info("insert :: " + eleList.size());
+			eleList = (List<Element>) response.readEntity(List.class);
+			LOGGER.info("inserted elements size :: " + eleList.size());
 		} else {
-			LOGGER.warn("insert :: " + response.getStatus());
+			LOGGER.warn("insert failed, status code :: " + response.getStatus());
 		}
-		return eleList;
+		for(int i = 0; i<eleList.size(); i++){
+			System.out.println(eleList.get(i));
+		}
 	}
 
 }
